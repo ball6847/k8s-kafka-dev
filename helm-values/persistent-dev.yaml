@@ -1,0 +1,131 @@
+# Bitnami Kafka Helm Chart - Persistent Development Configuration
+# This configuration includes persistence for development environments
+
+# Global settings
+global:
+  storageClass: ""
+
+# Kafka configuration
+kafka:
+  # Number of Kafka brokers
+  replicaCount: 1
+
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+
+  # Heap size settings
+  heapOpts: "-Xmx2048m -Xms2048m"
+
+  # Persistence enabled for data retention
+  persistence:
+    enabled: true
+    size: 10Gi
+    # Use default storage class or specify one
+    # storageClass: "standard"
+    accessModes:
+      - ReadWriteOnce
+
+  # Kafka configuration
+  config: |
+    # Development Kafka configuration with persistence
+    offsets.topic.replication.factor=1
+    transaction.state.log.replication.factor=1
+    transaction.state.log.min.isr=1
+    default.replication.factor=1
+    min.insync.replicas=1
+    
+    # Log settings for development
+    log.segment.bytes=134217728
+    log.retention.hours=168
+    log.retention.bytes=2147483648
+    
+    # Performance settings
+    num.network.threads=3
+    num.io.threads=8
+    socket.send.buffer.bytes=102400
+    socket.receive.buffer.bytes=102400
+    socket.request.max.bytes=104857600
+
+  # Listeners configuration
+  listeners:
+    client:
+      containerPort: 9092
+      protocol: PLAINTEXT
+      name: CLIENT
+    controller:
+      name: CONTROLLER
+      containerPort: 9093
+      protocol: PLAINTEXT
+    interbroker:
+      containerPort: 9094
+      protocol: PLAINTEXT
+      name: INTERNAL
+    external:
+      containerPort: 9095
+      protocol: PLAINTEXT
+      name: EXTERNAL
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    ports:
+      client: 9092
+
+# ZooKeeper configuration (disabled - using KRaft mode)
+zookeeper:
+  enabled: false
+
+# KRaft mode settings
+kraft:
+  enabled: true
+
+# External access configuration
+externalAccess:
+  enabled: true
+  service:
+    type: NodePort
+    ports:
+      external: 9094
+    domain: localhost
+  autoDiscovery:
+    enabled: true
+
+# Metrics and monitoring
+metrics:
+  kafka:
+    enabled: false
+  jmx:
+    enabled: false
+
+# ServiceMonitor for Prometheus
+serviceMonitor:
+  enabled: false
+
+# Volume permissions
+volumePermissions:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Sysctls configuration
+sysctlImage:
+  enabled: false
+
+# Log persistence
+logPersistence:
+  enabled: true
+  size: 8Gi
+  # storageClass: "standard"
+  accessModes:
+    - ReadWriteOnce
