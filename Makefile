@@ -85,6 +85,22 @@ topics: ## List Kafka topics
 	 kafka-topics.sh --list --bootstrap-server kafka:9092 2>/dev/null || \
 	 echo "Could not connect to Kafka"
 
+connection: ## Get Kafka connection string for internal cluster access
+	@echo "🔗 Kafka Connection String:"
+	@./scripts/get-kafka-connection.sh --type internal
+
+connection-local: ## Get Kafka connection string for local access (port-forward)
+	@echo "🔗 Kafka Connection String (Local):"
+	@./scripts/get-kafka-connection.sh --type local
+
+connection-external: ## Get Kafka connection string for external access
+	@echo "🔗 Kafka Connection String (External):"
+	@./scripts/get-kafka-connection.sh --type external
+
+connection-auth: ## Get Kafka connection string with authentication
+	@echo "🔗 Kafka Connection String (With Auth):"
+	@./scripts/get-kafka-connection.sh --type internal --auth
+
 clean: ## Clean up all Kafka deployments
 	@echo "🧹 Cleaning up Kafka deployments..."
 	@./scripts/cleanup.sh
