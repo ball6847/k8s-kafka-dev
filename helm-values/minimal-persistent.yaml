@@ -5,6 +5,29 @@
 global:
   storageClass: ""
 
+# Listeners configuration (PLAINTEXT - no authentication)
+listeners:
+  client:
+    containerPort: 9092
+    protocol: PLAINTEXT
+    name: CLIENT
+    sslClientAuth: ""
+  controller:
+    name: CONTROLLER
+    containerPort: 9093
+    protocol: PLAINTEXT
+    sslClientAuth: ""
+  interbroker:
+    containerPort: 9094
+    protocol: PLAINTEXT
+    name: INTERNAL
+    sslClientAuth: ""
+  external:
+    containerPort: 9095
+    protocol: PLAINTEXT
+    name: EXTERNAL
+    sslClientAuth: ""
+
 # Kafka configuration
 kafka:
   # Resource requests and limits (minimal for development)
@@ -37,31 +60,16 @@ kafka:
     default.replication.factor=1
     min.insync.replicas=1
     
+    # Disable SASL authentication (allow connections without username/password)
+    sasl.enabled.mechanisms=
+    security.inter.broker.protocol=PLAINTEXT
+    
     # Reduce log segment size for faster testing
     log.segment.bytes=67108864
     
     # Reduce log retention for development (but still keep data)
     log.retention.hours=168
     log.retention.bytes=1073741824
-
-  # Listeners configuration
-  listeners:
-    client:
-      containerPort: 9092
-      protocol: PLAINTEXT
-      name: CLIENT
-    controller:
-      name: CONTROLLER
-      containerPort: 9093
-      protocol: PLAINTEXT
-    interbroker:
-      containerPort: 9094
-      protocol: PLAINTEXT
-      name: INTERNAL
-    external:
-      containerPort: 9095
-      protocol: PLAINTEXT
-      name: EXTERNAL
 
   # Service configuration
   service:
